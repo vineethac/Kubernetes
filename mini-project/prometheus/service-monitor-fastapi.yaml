@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: kube-stack-prometheus
+  name: fastapi-monitor
+  namespace: prometheus
+spec:
+  endpoints:
+  - honorLabels: true
+    path: /metrics
+    port: http-web-svc
+    scheme: http
+    scrapeTimeout: 30s
+  namespaceSelector:
+    matchNames:
+    - fastapi
+  selector:
+    matchLabels:
+      app: fastapi

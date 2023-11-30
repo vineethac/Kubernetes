@@ -1,0 +1,24 @@
+namespace: fastapi
+
+appname: fastapi
+
+image:
+  name: vineethac/fastapi-app-with-metrics
+  tag: latest
+
+deployment:
+  replicas: 1
+
+service:
+  name: fastapi-svc
+  ports:
+    name: http-web-svc
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+
+ingress:
+  name: fastapi-ing
+  host: fastapi-vineethac-poc.test.com
+
+
