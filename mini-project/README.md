@@ -6,6 +6,8 @@
 * We will also deploy and use an ingress controller for exposing the web app, Prometheus, and Grafana to external users.
 * Logging - TODO
 
+[<img src="images/mini-project.png" width="350"/>](images/mini-project.png)
+
 ## Access to a K8s cluster
 * Here `gc.kubeconfig` is the kubeconfig for the K8s cluster where we will deploy the app and monitoring components.
 
@@ -249,6 +251,7 @@ serviceMonitor/prometheus/fastapi-monitor/0 (1 / 1 active targets)
 ```
 * You also try to create cronjobs for the same instead of manually doing curl!
 
+![<img src="images/mini-grafana.png" width="350"/>](images/grafana.png)
 
 ## Configure cronjobs to simulate the web application access
 * TODO
