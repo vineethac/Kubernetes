@@ -6,7 +6,7 @@
 * We will also deploy and use an ingress controller for exposing the web app, Prometheus, and Grafana to external users.
 * For logging we will deploy Grafana Loki stack.
 
-[<img src="images/mini-project.png" width="350"/>](images/mini-project.png)
+[<img src="images/mini-project-1.png" width="450"/>](images/mini-project-1.png)
 
 ## Access to a K8s cluster
 * Here `gc.kubeconfig` is the kubeconfig for the K8s cluster where we will deploy the app and monitoring components.
@@ -262,10 +262,10 @@ serviceMonitor/prometheus/fastapi-monitor/0 (1 / 1 active targets)
 ❯ helm repo update
 ❯ helm repo list
 ❯ helm search repo loki
-❯ helm show values grafana/loki-stack > loki-stack/values.yaml
 ```
+* I saved the values file using `helm show values grafana/loki-stack` and made necessary mofifications as mentioned below. This step and next two steps are just a note to explain how this values file was created.
 * From the `loki-stack/values.yaml` I enabled Grafana by setting `enabled: true`. This will create a new Grafana instance.  
-* I also added a section under `grafana.ingress` in the `loki-stack/values.yaml`, that will create an ingress resource for this new Grafana instace.
+* I also added a section under `grafana.ingress` in the `loki-stack/values.yaml`, that will create an ingress resource for this new Grafana instace. 
 * Deploy loki-stack using Helm.
 ```
 ❯ helm upgrade --install --atomic loki-stack grafana/loki-stack --values loki-stack/values.yaml --kubeconfig=gc.kubeconfig --create-namespace --namespace=loki-stack
