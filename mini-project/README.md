@@ -4,7 +4,7 @@
 * This web app also exposes some metrics using the Prometheus Python client.
 * To store and visualize these metrics we will deploy Prometheus and Grafana in the K8s cluster.
 * We will also deploy and use an ingress controller for exposing the web app, Prometheus, and Grafana to external users.
-* Logging - TODO
+* For logging we will deploy Grafana Loki stack.
 
 [<img src="images/mini-project.png" width="350"/>](images/mini-project.png)
 
@@ -257,7 +257,128 @@ serviceMonitor/prometheus/fastapi-monitor/0 (1 / 1 active targets)
 * TODO
 
 ## Logging
-* TODO
+```
+❯ helm repo add grafana https://grafana.github.io/helm-charts
+❯ helm repo update
+❯ helm repo list
+❯ helm search repo loki
+❯ helm show values grafana/loki-stack > loki-stack/values.yaml
+```
+* From the `loki-stack/values.yaml` I enabled Grafana by setting `enabled: true`. This will create a new Grafana instance.  
+* I also added a section under `grafana.ingress` in the `loki-stack/values.yaml`, that will create an ingress resource for this new Grafana instace.
+* Deploy loki-stack using Helm.
+```
+❯ helm upgrade --install --atomic loki-stack grafana/loki-stack --values loki-stack/values.yaml --kubeconfig=gc.kubeconfig --create-namespace --namespace=loki-stack
+WARNING: Kubernetes configuration file is group-readable. This is insecure. Location: gc.kubeconfig
+WARNING: Kubernetes configuration file is world-readable. This is insecure. Location: gc.kubeconfig
+Release "loki-stack" does not exist. Installing it now.
+W1203 13:36:48.286498   31990 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+W1203 13:36:48.592349   31990 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+W1203 13:36:55.840670   31990 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+W1203 13:36:55.849356   31990 warnings.go:70] policy/v1beta1 PodSecurityPolicy is deprecated in v1.21+, unavailable in v1.25+
+NAME: loki-stack
+LAST DEPLOYED: Sun Dec  3 13:36:45 2023
+NAMESPACE: loki-stack
+STATUS: deployed
+REVISION: 1
+NOTES:
+The Loki stack has been deployed to your cluster. Loki can now be added as a datasource in Grafana.
 
+See http://docs.grafana.org/features/datasources/loki/ for more detail.
+```
 
+* Verify.
+```
+❯ KUBECONFIG=gc.kubeconfig kg all -n loki-stack
+NAME                                     READY   STATUS    RESTARTS   AGE
+pod/loki-stack-0                         1/1     Running   0          89s
+pod/loki-stack-grafana-dff58c989-jdq2l   2/2     Running   0          89s
+pod/loki-stack-promtail-5xmrj            1/1     Running   0          89s
+pod/loki-stack-promtail-cts5j            1/1     Running   0          89s
+pod/loki-stack-promtail-frwvw            1/1     Running   0          89s
+pod/loki-stack-promtail-wn4dw            1/1     Running   0          89s
 
+NAME                            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/loki-stack              ClusterIP   10.110.208.35    <none>        3100/TCP   90s
+service/loki-stack-grafana      ClusterIP   10.104.222.214   <none>        80/TCP     90s
+service/loki-stack-headless     ClusterIP   None             <none>        3100/TCP   90s
+service/loki-stack-memberlist   ClusterIP   None             <none>        7946/TCP   90s
+
+NAME                                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.apps/loki-stack-promtail   4         4         4       4            4           <none>          90s
+
+NAME                                 READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/loki-stack-grafana   1/1     1            1           90s
+
+NAME                                           DESIRED   CURRENT   READY   AGE
+replicaset.apps/loki-stack-grafana-dff58c989   1         1         1       90s
+
+NAME                          READY   AGE
+statefulset.apps/loki-stack   1/1     91s
+
+❯ KUBECONFIG=gc.kubeconfig kg ing -n loki-stack
+NAME                 CLASS   HOSTS                                 ADDRESS        PORTS   AGE
+loki-stack-grafana   nginx   grafana-loki-vineethac-poc.test.com   10.216.24.45   80      7m16s
+❯
+```
+
+* Note: I've added the ingress IP and hostname to my local `/etc/hosts` file in my Mac, so that name resolution works!
+```
+❯ cat /etc/hosts | grep 10.216.24.45
+10.216.24.45 fastapi-vineethac-poc.test.com
+10.216.24.45 grafana-vineethac-poc.test.com
+10.216.24.45 prometheus-vineethac-poc.test.com
+10.216.24.45 grafana-loki-vineethac-poc.test.com
+❯
+```
+
+* At this point you should be able to access the new Grafana instance for Loki at http://grafana-loki-vineethac-poc.test.com.
+* You can get the username and password for this Grafana instace from the following secret:
+```
+❯ KUBECONFIG=gc.kubeconfig kg secrets -n loki-stack
+NAME                               TYPE                                  DATA   AGE
+default-token-fmp7v                kubernetes.io/service-account-token   3      7m37s
+loki-stack                         Opaque                                1      7m35s
+loki-stack-grafana                 Opaque                                3      7m35s
+loki-stack-grafana-token-pvjhv     kubernetes.io/service-account-token   3      7m35s
+loki-stack-promtail                Opaque                                1      7m35s
+loki-stack-promtail-token-82vnk    kubernetes.io/service-account-token   3      7m35s
+loki-stack-token-4s5sh             kubernetes.io/service-account-token   3      7m35s
+sh.helm.release.v1.loki-stack.v1   helm.sh/release.v1                    1      7m36s
+❯
+❯ KUBECONFIG=gc.kubeconfig kg secrets -n loki-stack loki-stack-grafana -oyaml
+apiVersion: v1
+data:
+  admin-password: VWJ0NFNweFRuYkI2TkdMcGM2VHpGT3hROFJiOTYxZkFiVURvbUpKcA==
+  admin-user: YWRtaW4=
+  ldap-toml: ""
+kind: Secret
+metadata:
+  annotations:
+    meta.helm.sh/release-name: loki-stack
+    meta.helm.sh/release-namespace: loki-stack
+  creationTimestamp: "2023-12-03T08:06:56Z"
+  labels:
+    app.kubernetes.io/instance: loki-stack
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/version: 8.3.5
+    helm.sh/chart: grafana-6.43.5
+  name: loki-stack-grafana
+  namespace: loki-stack
+  resourceVersion: "975894"
+  uid: 0a3a8716-0616-405d-a84d-247a49af9977
+type: Opaque
+❯
+❯ echo "VWJ0NFNweFRuYkI2TkdMcGM2VHpGT3hROFJiOTYxZkFiVURvbUpKcA==" | base64 -d
+Ubt4SpxTnbB6NGLpc6TzFOxQ8Rb961fAbUDomJJp%
+❯
+❯ echo "YWRtaW4=" | base64 -d
+admin%
+```
+
+* Login to the Grafana instance for Loki and verify the Data Sources section, and it must be already configured.
+* Now click on explore option and use the log browser to query logs.
+* If you enter `{namespace="fastapi"}` in the log browser and click on `Run query` option, you should be able to see logs from the `fastapi` namespace.
+
+![<img src="images/loki-logs.png" width="350"/>](images/loki-logs.png)
