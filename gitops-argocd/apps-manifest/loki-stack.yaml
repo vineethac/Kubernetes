@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki-stack
+  namespace: argocd
+spec:
+  destination:
+    namespace: loki-stack
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: loki-stack
+    helm:
+      values: |
+        grafana:
+          enabled: true
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - grafana-loki-vineethac-poc.test.com
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 2.9.11
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+    - CreateNamespace=true

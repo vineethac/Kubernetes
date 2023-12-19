@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-stack
+  namespace: argocd
+operation:
+  initiatedBy:
+    automated: true
+  retry:
+    limit: 5
+  sync:
+    revision: 55.5.0
+    syncOptions:
+    - CreateNamespace=true
+spec:
+  destination:
+    namespace: prometheus
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: kube-prometheus-stack
+    helm:
+      values: |
+        grafana:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - grafana-vineethac-poc.test.com
+        prometheus:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - prometheus-vineethac-poc.test.com
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 55.5.0
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true

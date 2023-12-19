@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fastapi-service-monitor
+  namespace: argocd
+spec:
+  destination:
+    namespace: prometheus
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    directory:
+      exclude: values.yaml,*.json
+      include: service-monitor-fastapi.yaml
+    path: mini-project/prometheus/
+    repoURL: https://github.com/vineethac/Kubernetes.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+    - CreateNamespace=true

@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fastapi-webapp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/vineethac/Kubernetes.git'
+    path: mini-project/appchart/fastapi-webapp/
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: image.name
+          value: >-
+            vineethac/fastapi-app-with-metrics
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: fastapi
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
