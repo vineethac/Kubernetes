@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/style.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17.0/dist/browser/index.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/index.js"></script><script>(r => {
+                setTimeout(r);
+              })(() => {
+  const {
+    markmap,
+    mm
+  } = window;
+  const {
+    el
+  } = markmap.Toolbar.create(mm);
+  el.setAttribute('style', 'position:absolute;bottom:20px;right:20px');
+  document.body.append(el);
+})</script><script>((getMarkmap, getOptions, root2, jsonOptions) => {
+              const markmap = getMarkmap();
+              window.mm = markmap.Markmap.create(
+                "svg#mindmap",
+                (getOptions || markmap.deriveOptions)(jsonOptions),
+                root2
+              );
+            })(() => window.markmap,null,{"content":"K8s NFR System Design","children":[{"content":"Availability","children":[{"content":"K8s infra","children":[{"content":"HA topology","children":[],"payload":{"lines":"6,7"}},{"content":"AZs/ Multiple racks and DCs","children":[],"payload":{"lines":"7,8"}},{"content":"Multiple CP nodes","children":[],"payload":{"lines":"8,9"}},{"content":"Multiple Worker nodepools","children":[{"content":"group nodes with same config","children":[],"payload":{"lines":"10,11"}},{"content":"helps to upgrade per nodepool","children":[],"payload":{"lines":"11,12"}},{"content":"eg: group with GPUs","children":[],"payload":{"lines":"12,13"}},{"content":"System nodepool (coredns, metrics-server, monitoring, logging) + Workload nodepools","children":[],"payload":{"lines":"13,14"}},{"content":"use taints and tolerations for scheduling workload","children":[],"payload":{"lines":"14,15"}}],"payload":{"lines":"9,10"}},{"content":"HA of container registry","children":[],"payload":{"lines":"15,16"}},{"content":"Use multiple K8s clusters to deploy apps","children":[],"payload":{"lines":"16,17"}},{"content":"K8s storage considerations and CSI","children":[],"payload":{"lines":"17,18"}}],"payload":{"lines":"5,6"}},{"content":"K8s apps","children":[{"content":"Use Deployments/ STS with multiple replicas","children":[],"payload":{"lines":"20,21"}},{"content":"Use PDBs, resource requests, QoS, pod topologySpreadConstraints","children":[],"payload":{"lines":"21,22"}},{"content":"Use ingress and services for loadbalancing","children":[],"payload":{"lines":"22,23"}},{"content":"Use deployment strategies like rolling, canary, blue/green","children":[],"payload":{"lines":"23,24"}}],"payload":{"lines":"19,20"}}],"payload":{"lines":"4,5"}},{"content":"Reliability","children":[{"content":"K8s infra","children":[{"content":"Have multiple CP and Worker nodes and node pools","children":[],"payload":{"lines":"29,30"}},{"content":"Use ingress for LB","children":[],"payload":{"lines":"30,31"}},{"content":"Implement regular K8s cluster etcd backup","children":[],"payload":{"lines":"31,32"}},{"content":"K8s infra monitoring/ logging to identify issues","children":[],"payload":{"lines":"32,33"}},{"content":"Use multiple K8s clusters across AZs","children":[],"payload":{"lines":"33,34"}},{"content":"DR site and strategy","children":[],"payload":{"lines":"34,35"}},{"content":"Rate limiting using Istio (to avoid overloading traffic)","children":[],"payload":{"lines":"35,36"}},{"content":"Namespace level ResourceQuotas and LimitRange","children":[],"payload":{"lines":"36,37"}},{"content":"Perform benchmarking","children":[],"payload":{"lines":"37,38"}},{"content":"Health check of infra components","children":[],"payload":{"lines":"38,39"}},{"content":"K8s storage considerations and CSI","children":[],"payload":{"lines":"39,40"}}],"payload":{"lines":"28,29"}},{"content":"K8s apps","children":[{"content":"Use multiple replicas","children":[],"payload":{"lines":"41,42"}},{"content":"Use rolling updates to minimize downtime","children":[],"payload":{"lines":"42,43"}},{"content":"Implement regular app backups (Use Velero)","children":[],"payload":{"lines":"43,44"}},{"content":"App monitoring/ logging to identify issues","children":[],"payload":{"lines":"44,45"}},{"content":"Deploy apps across multiple K8s clusters","children":[],"payload":{"lines":"45,46"}},{"content":"Runs apps in active-active/ active-passive modes","children":[],"payload":{"lines":"46,47"}},{"content":"Granular traffic control to apps using Istio service mesh virtual services","children":[],"payload":{"lines":"47,48"}},{"content":"Use Circuit breaker at app level to avoid cascading of failures to other system components","children":[],"payload":{"lines":"48,49"}},{"content":"Use readiness and liveness probes","children":[],"payload":{"lines":"49,50"}},{"content":"QoS for pods (Guaranteed/ Burstable/ BestEffort)","children":[],"payload":{"lines":"50,51"}},{"content":"Perform benchmarking","children":[],"payload":{"lines":"51,52"}},{"content":"Health check of app","children":[],"payload":{"lines":"52,53"}}],"payload":{"lines":"40,41"}}],"payload":{"lines":"27,28"}},{"content":"Scalability","children":[{"content":"K8s infra","children":[{"content":"Cluster auto scaling/ Karpenter","children":[],"payload":{"lines":"58,59"}}],"payload":{"lines":"57,58"}},{"content":"K8s apps","children":[{"content":"HPA/ KEDA","children":[],"payload":{"lines":"60,62"}}],"payload":{"lines":"59,60"}}],"payload":{"lines":"56,57"}},{"content":"Observability","children":[{"content":"K8s infra/ K8s apps","children":[{"content":"Metrics (Prometheus stack)","children":[],"payload":{"lines":"66,67"}},{"content":"Logs (Loki stack)","children":[],"payload":{"lines":"67,68"}},{"content":"Traces (Jaeger and Grafana Tempo)","children":[],"payload":{"lines":"68,69"}},{"content":"Alerts (Alert manager)","children":[],"payload":{"lines":"69,70"}},{"content":"Service mesh","children":[],"payload":{"lines":"70,72"}}],"payload":{"lines":"65,66"}}],"payload":{"lines":"64,65"}},{"content":"Performance","children":[{"content":"Latency","children":[],"payload":{"lines":"75,76"}},{"content":"Saturation","children":[],"payload":{"lines":"76,77"}},{"content":"Errors","children":[],"payload":{"lines":"77,78"}},{"content":"Traffic","children":[],"payload":{"lines":"78,79"}}],"payload":{"lines":"74,75"}},{"content":"Security","children":[{"content":"RBAC","children":[],"payload":{"lines":"83,84"}},{"content":"Secrets","children":[],"payload":{"lines":"84,85"}},{"content":"Netowork policies","children":[],"payload":{"lines":"85,86"}},{"content":"Audit logs","children":[],"payload":{"lines":"86,87"}},{"content":"Enforce policies/ governance using OPA Gatekeeper","children":[],"payload":{"lines":"87,88"}},{"content":"Service mesh","children":[],"payload":{"lines":"88,89"}},{"content":"Use Vault","children":[],"payload":{"lines":"89,90"}},{"content":"Zero trust between micro services","children":[],"payload":{"lines":"90,91"}},{"content":"PSP","children":[],"payload":{"lines":"91,92"}},{"content":"Vulnerability scanning of container images","children":[],"payload":{"lines":"92,93"}}],"payload":{"lines":"82,83"}},{"content":"Agility","children":[{"content":"Deployability (Ease of deploy/ upgrade)","children":[{"content":"Use Helm charts","children":[],"payload":{"lines":"97,98"}}],"payload":{"lines":"96,97"}},{"content":"Portability (Ease of moving across platforms)","children":[{"content":"K8s backups","children":[],"payload":{"lines":"99,100"}}],"payload":{"lines":"98,99"}},{"content":"Maintainability (Ease of test/ modify/ maintain)","children":[{"content":"Microservices","children":[],"payload":{"lines":"101,103"}}],"payload":{"lines":"100,101"}}],"payload":{"lines":"95,96"}},{"content":"Extensibility","children":[{"content":"Reusability","children":[],"payload":{"lines":"106,107"}},{"content":"Pluggability (Ease to integrate with other things)","children":[],"payload":{"lines":"107,108"}}],"payload":{"lines":"105,106"}}],"payload":{"lines":"0,1"}},{})</script>
+</body>
+</html>
